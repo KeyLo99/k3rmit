@@ -72,6 +72,7 @@ static gboolean debugMessages = FALSE;    /* Boolean value for -d argument */
 static gboolean closeTab = FALSE;         /* Close the tab on child-exited signal */
 static va_list vargs;                     /* Hold information about variable arguments */
 typedef struct KeyBindings {              /* Key bindings struct */
+    gboolean internal;
     char *key;
     char *cmd;
 } Bindings;
@@ -81,7 +82,7 @@ static GdkRGBA termPalette[TERM_PALETTE_SIZE];   /* Terminal colors */
 /*!
  * Print log (debug) message with format specifiers.
  *
- * \param format string and format specifiers for vfprintf function  
+ * \param format string and format specifiers for vfprintf function
  * \return 0 on success
  */
 static int printLog(char *format, ...) {
@@ -113,6 +114,57 @@ static int connectSignals(GtkWidget *terminal) {
     g_signal_connect(terminal, "window-title-changed", G_CALLBACK(termOnTitleChanged),
                      GTK_WINDOW(window));
     return 0;
+}
+
+/*
+ * Handle internal action
+ *
+ * \param terminal
+ * \param action
+ * \return FALSE if no action is found & TRUE otherwise
+ */
+static gboolean termAction(GtkWidget *terminal, const char *action) {
+    if (strcmp(action, "copy") == 0) {
+        vte_terminal_copy_clipboard_format(VTE_TERMINAL(terminal),
+                                           VTE_FORMAT_TEXT);
+    } else if (strcmp(action, "paste") == 0) {
+        vte_terminal_paste_clipboard(VTE_TERMINAL(terminal));
+    } else if (strcmp(action, "reload-config") == 0) {
+        printLog("Reloading configuration file...\n");
+        if (defaultConfigFile)
+            configFileName = NULL;
+        parseSettings();
+        configureTerm(terminal);
+    } else if (strcmp(action, "default-config") == 0) {
+        printLog("Loading the default configuration...\n");
+        colorCount = 0;
+        configureTerm(terminal);
+    } else if (strcmp(action, "new-tab") == 0) {
+        gtk_notebook_append_page(GTK_NOTEBOOK(notebook), getTerm(), NULL);
+        gtk_widget_show_all(window);
+    } else if (strcmp(action, "exit") == 0) {
+        gtk_main_quit();
+    } else if (strcmp(action, "inc-font-size") == 0) {
+        setTermFont(terminal, currentFontSize + 1);
+    } else if (strcmp(action, "dec-font-size") == 0) {
+        setTermFont(terminal, currentFontSize - 1);
+    } else if (strcmp(action, "default-font-size") == 0) {
+        setTermFont(terminal, defaultFontSize);
+    } else if (strcmp(action, "next-tab") == 0) {
+        gtk_notebook_next_page(GTK_NOTEBOOK(notebook));
+    } else if (strcmp(action, "prev-tab") == 0) {
+        gtk_notebook_prev_page(GTK_NOTEBOOK(notebook));
+    } else if (strcmp(action, "close-tab") == 0) {
+        if (gtk_notebook_get_n_pages(GTK_NOTEBOOK(notebook)) == 1)
+            return TRUE;
+        closeTab = TRUE;
+        gtk_notebook_remove_page(GTK_NOTEBOOK(notebook),
+                                 gtk_notebook_get_current_page(GTK_NOTEBOOK(notebook)));
+        gtk_widget_queue_draw(GTK_WIDGET(notebook));
+    } else {
+        return FALSE;
+    }
+    return TRUE;
 }
 
 /*!
@@ -148,7 +200,7 @@ static gboolean termOnChildExit(VteTerminal *terminal, gint status,
 
 /*!
  * Handle terminal key press events.
- * 
+ *
  * \param terminal
  * \param event (key press or release)
  * \param userData
@@ -167,96 +219,16 @@ static gboolean termOnKeyPress(GtkWidget *terminal, GdkEventKey *event,
                                           atoi(gdk_keyval_name(event->keyval)) - 1);
             return TRUE;
         }
-        switch (event->keyval) {
-            /* Copy & Paste */
-            case GDK_KEY_C: /* Fallthrough */
-            case GDK_KEY_c:
-                vte_terminal_copy_clipboard_format(VTE_TERMINAL(terminal),
-                                                   VTE_FORMAT_TEXT);
-                return TRUE;
-            case GDK_KEY_V: /* Fallthrough */
-            case GDK_KEY_v:
-                vte_terminal_paste_clipboard(VTE_TERMINAL(terminal));
-                return TRUE;
-            /* Reload configuration file */
-            case GDK_KEY_R: /* Fallthrough */
-            case GDK_KEY_r:
-                printLog("Reloading configuration file...\n");
-                if (defaultConfigFile)
-                    configFileName = NULL;
-                parseSettings();
-                configureTerm(terminal);
-                return TRUE;
-            /* Load the default configuration */
-            case GDK_KEY_D:
-            case GDK_KEY_d:
-                printLog("Loading the default configuration...\n");
-                colorCount = 0;
-                configureTerm(terminal);
-                return TRUE;
-            /* Open new tab */
-            case GDK_KEY_T: /* Fallthrough */
-            case GDK_KEY_t:
-                gtk_notebook_append_page(GTK_NOTEBOOK(notebook), getTerm(), NULL);
-                gtk_widget_show_all(window);
-                return TRUE;
-            /* Exit */
-            case GDK_KEY_Q: /* Fallthrough */
-            case GDK_KEY_q:
-                gtk_main_quit();
-                return TRUE;
-            /* Change font size */
-            case GDK_KEY_K: /* Fallthrough */
-            case GDK_KEY_k: /* Fallthrough */
-            case GDK_KEY_Up:
-                setTermFont(terminal, currentFontSize + 1);
-                return TRUE;
-            case GDK_KEY_J: /* Fallthrough */
-            case GDK_KEY_j: /* Fallthrough */
-            case GDK_KEY_Down:
-                setTermFont(terminal, currentFontSize - 1);
-                return TRUE;
-            case GDK_KEY_equal:
-                setTermFont(terminal, defaultFontSize);
-                return TRUE;
-            /* Open new tab */
-            case GDK_KEY_Return:
-                gtk_notebook_append_page(GTK_NOTEBOOK(notebook), getTerm(), NULL);
-                gtk_widget_show_all(window);
-                return TRUE;
-            /* Switch to the next tab */
-            case GDK_KEY_L:          /* Fallthrough */
-            case GDK_KEY_l:          /* Fallthrough */
-            case GDK_KEY_KP_Page_Up: /* Fallthrough */
-            case GDK_KEY_Right:
-                gtk_notebook_next_page(GTK_NOTEBOOK(notebook));
-                return TRUE;
-            /* Switch to the previous tab */
-            case GDK_KEY_H:            /* Fallthrough */
-            case GDK_KEY_h:            /* Fallthrough */
-            case GDK_KEY_KP_Page_Down: /* Fallthrough */
-            case GDK_KEY_Left:
-                gtk_notebook_prev_page(GTK_NOTEBOOK(notebook));
-                return TRUE;
-            /* Close the current tab */
-            case GDK_KEY_W:         /* Fallthrough */
-            case GDK_KEY_w:         /* Fallthrough */
-            case GDK_KEY_BackSpace: /* Fallthrough */
-                if (gtk_notebook_get_n_pages(GTK_NOTEBOOK(notebook)) == 1)
-                    return TRUE;
-                closeTab = TRUE;
-                gtk_notebook_remove_page(GTK_NOTEBOOK(notebook),
-                                         gtk_notebook_get_current_page(GTK_NOTEBOOK(notebook)));
-                gtk_widget_queue_draw(GTK_WIDGET(notebook));
-                return TRUE;
-            default:
-                for (int i = 0; i < keyCount; i++) {
-                    if (!strcasecmp(gdk_keyval_name(event->keyval), keyBindings[i].key)) {
-                        vte_terminal_feed_child(VTE_TERMINAL(terminal),
-                                                keyBindings[i].cmd, -1);
-                        return TRUE;
-                    }
+        for (int i = 0; i < keyCount; i++) {
+            if (!strcasecmp(gdk_keyval_name(event->keyval), keyBindings[i].key)) {
+                if (keyBindings[i].internal) {
+                    termAction(terminal, keyBindings[i].cmd);
+                } else {
+                    vte_terminal_feed_child(VTE_TERMINAL(terminal),
+                                            keyBindings[i].cmd, -1);
                 }
+                return TRUE;
+            }
         }
     }
     return FALSE;
@@ -641,6 +613,12 @@ static void parseSettings() {
                         g_strconcat(g_strdup(cmd + 1), "\r", NULL);
                 else
                     keyBindings[keyCount].cmd = g_strdup(cmd + 1);
+                /* Internal option is specified */
+                if (!strcmp(option, "bindi"))
+                    /* Set binding as internal*/
+                    keyBindings[keyCount].internal = TRUE;
+                else
+                    keyBindings[keyCount].internal = FALSE;
                 /* Add key binding to the keys */
                 keyBindings[keyCount].key = g_strdup(key);
                 printLog("cmd %d = %s -> \"%s\"\n", keyCount + 1,
