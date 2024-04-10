@@ -93,21 +93,22 @@ kermit [-h] [-v] [-d] [-c config] [-t title] [-w workdir] [-e command]
 
 ## Default Key Bindings
 
-| Key                                    | Action                            |
-|----------------------------------------|-----------------------------------|
-| `ctrl` + `alt` + `c`                   | Copy to clipboard                 |
-| `ctrl` + `alt` + `v`                   | Paste from clipboard              |
-| `ctrl` + `alt` + `t`/`return`          | Open a new tab                    |
-| `ctrl` + `alt` + `r`                   | Reload configuration file         |
-| `ctrl` + `alt` + `d`                   | Load default configuration        |
-| `ctrl` + `alt` + `q`                   | Exit the terminal                 |
-| `ctrl` + `alt` + `k`/`up`              | Increase font size                |
-| `ctrl` + `alt` + `j`/`down`            | Decrease font size                |
-| `ctrl` + `alt` + `equals`/`plus`       | Reset font size to default        |
-| `ctrl` + `alt` + `<num>`               | Switch to tab with number `<num>` |
-| `ctrl` + `alt` + `l`/`right`/`pageup`  | Switch to next tab                |
-| `ctrl` + `alt` + `h`/`left`/`pagedown` | Switch to previous tab            |
-| `ctrl` + `alt` + `backspace`           | Close the current tab             |
+| Key                                    | Action                             |
+|----------------------------------------|------------------------------------|
+| `ctrl` + `alt` + `c`                   | Copy to clipboard                  |
+| `ctrl` + `alt` + `v`                   | Paste from clipboard               |
+| `ctrl` + `alt` + `t`/`return`          | Open a new tab                     |
+| `ctrl` + `alt` + `n`                   | Open a new window                  |
+| `ctrl` + `alt` + `r`                   | Reload configuration file          |
+| `ctrl` + `alt` + `d`                   | Load default configuration         |
+| `ctrl` + `alt` + `q`                   | Exit the terminal                  |
+| `ctrl` + `alt` + `k`/`up`              | Increase font size                 |
+| `ctrl` + `alt` + `j`/`down`            | Decrease font size                 |
+| `ctrl` + `alt` + `equals`/`plus`       | Reset font size to default         |
+| `ctrl` + `alt` + `<num>`               | Switch to tab with number `<num>`  |
+| `ctrl` + `alt` + `l`/`right`/`pageup`  | Switch to next tab                 |
+| `ctrl` + `alt` + `h`/`left`/`pagedown` | Switch to previous tab             |
+| `ctrl` + `alt` + `backspace`           | Close the current tab              |
 
 The default modifiers (`ctrl` + `alt`) can be set to `ctrl` + `shift` using the config file.
 Key bindings can be overridden by custom key bindings.
