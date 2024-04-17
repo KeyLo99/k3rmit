@@ -162,6 +162,7 @@ Currently available internal commands (`bindi`):
 * `next-tab`: go to next tab
 * `prev-tab`: go to previous tab
 * `close-tab`: close current tab
+* `new-window`: open new window with same working directory (requires `vte.sh`).
 
 
 ### Padding
