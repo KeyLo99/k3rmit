@@ -161,8 +161,6 @@ static gboolean termAction(GtkWidget *terminal, const char *action) {
         gtk_notebook_remove_page(GTK_NOTEBOOK(notebook),
                                  gtk_notebook_get_current_page(GTK_NOTEBOOK(notebook)));
         gtk_widget_queue_draw(GTK_WIDGET(notebook));
-    } else if (strcmp(action, "new-window") == 0) {
-        termClone(VTE_TERMINAL(terminal));
     } else {
         return FALSE;
     }
