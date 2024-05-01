@@ -91,6 +91,29 @@ kermit [-h] [-v] [-d] [-c config] [-t title] [-w workdir] [-e command]
 [-e command] sets the command to execute in terminal
 ```
 
+## Default Key Bindings
+
+| Key                                    | Action                            |
+|----------------------------------------|-----------------------------------|
+| `ctrl` + `alt` + `c`                   | Copy to clipboard                 |
+| `ctrl` + `alt` + `v`                   | Paste from clipboard              |
+| `ctrl` + `alt` + `t`                   | Open a new tab                    |
+| `ctrl` + `alt` + `r`                   | Reload configuration file         |
+| `ctrl` + `alt` + `d`                   | Load default configuration        |
+| `ctrl` + `alt` + `q`                   | Exit the terminal                 |
+| `ctrl` + `alt` + `k`/`up`              | Increase font size                |
+| `ctrl` + `alt` + `j`/`down`            | Decrease font size                |
+| `ctrl` + `alt` + `equals`/`plus`       | Reset font size to default        |
+| `ctrl` + `alt` + `return`              | Open new tab                      |
+| `ctrl` + `alt` + `<num>`               | Switch to tab with number `<num>` |
+| `ctrl` + `alt` + `l`/`right`/`pageup`  | Switch to next tab                |
+| `ctrl` + `alt` + `h`/`left`/`pagedown` | Switch to previous tab            |
+| `ctrl` + `alt` + `backspace`           | Close the current tab             |
+
+The default modifiers (`ctrl` + `alt`) can be set to `ctrl` + `shift` using the config file.
+Key bindings can be overridden by custom key bindings.
+See [Configuration / Key Bindings](#key-bindings) for more information.
+
 ## Customization
 
 ### Config File
