@@ -71,13 +71,41 @@ static gboolean defaultConfigFile = TRUE; /* Boolean value for -c argument */
 static gboolean debugMessages = FALSE;    /* Boolean value for -d argument */
 static gboolean closeTab = FALSE;         /* Close the tab on child-exited signal */
 static va_list vargs;                     /* Hold information about variable arguments */
-typedef struct KeyBindings {              /* Key bindings struct */
+static GdkRGBA termPalette[TERM_PALETTE_SIZE];   /* Terminal colors */
+typedef struct {              /* Key bindings struct */
     gboolean internal;
     char *key;
     char *cmd;
 } Bindings;
+typedef struct {       /* Default key bindings struct */
+    Bindings bind;
+    gboolean invalid;
+} DefaultBindings;
 static Bindings keyBindings[TERM_CONFIG_LENGTH]; /* Array for custom key bindings */
-static GdkRGBA termPalette[TERM_PALETTE_SIZE];   /* Terminal colors */
+static DefaultBindings defaultKeyBindings[] = {     /* Preconfigured default key bindings */
+    { .bind = { .key = "c", .cmd = "copy", .internal = TRUE } },
+    { .bind = { .key = "v", .cmd = "paste", .internal = TRUE } },
+    { .bind = { .key = "t", .cmd = "new-tab", .internal = TRUE } },
+    { .bind = { .key = "t", .cmd = "return", .internal = TRUE } },
+    { .bind = { .key = "r", .cmd = "reload-config", .internal = TRUE } },
+    { .bind = { .key = "d", .cmd = "default-config", .internal = TRUE } },
+    { .bind = { .key = "q", .cmd = "exit", .internal = TRUE } },
+    { .bind = { .key = "k", .cmd = "inc-font-size", .internal = TRUE } },
+    { .bind = { .key = "up", .cmd = "inc-font-size", .internal = TRUE } },
+    { .bind = { .key = "j", .cmd = "dec-font-size", .internal = TRUE } },
+    { .bind = { .key = "down", .cmd = "dec-font-size", .internal = TRUE } },
+    { .bind = { .key = "equals", .cmd = "default-font-size", .internal = TRUE } },
+    { .bind = { .key = "plus", .cmd = "default-font-size", .internal = TRUE } },
+    { .bind = { .key = "l", .cmd = "next-tab", .internal = TRUE } },
+    { .bind = { .key = "right", .cmd = "next-tab", .internal = TRUE } },
+    { .bind = { .key = "page_down", .cmd = "next-tab", .internal = TRUE } },
+    { .bind = { .key = "h", .cmd = "prev-tab", .internal = TRUE } },
+    { .bind = { .key = "left", .cmd = "prev-tab", .internal = TRUE } },
+    { .bind = { .key = "page_up", .cmd = "prev-tab", .internal = TRUE } },
+    { .bind = { .key = "w", .cmd = "close-tab", .internal = TRUE } },
+    { .bind = { .key = "backspace", .cmd = "close-tab", .internal = TRUE } },
+};
+static size_t defaultKeyCount = sizeof(defaultKeyBindings) / sizeof(DefaultBindings);
 
 /*!
  * Print log (debug) message with format specifiers.
@@ -218,6 +246,19 @@ static gboolean termOnKeyPress(GtkWidget *terminal, GdkEventKey *event,
             gtk_notebook_set_current_page(GTK_NOTEBOOK(notebook),
                                           atoi(gdk_keyval_name(event->keyval)) - 1);
             return TRUE;
+        }
+        for (int i = 0; i < defaultKeyCount; i++) {
+            if (!strcasecmp(gdk_keyval_name(event->keyval), defaultKeyBindings[i].bind.key)) {
+                if (!defaultKeyBindings[i].invalid) {
+                    if (defaultKeyBindings[i].bind.internal) {
+                        termAction(terminal, defaultKeyBindings[i].bind.cmd);
+                    } else {
+                        vte_terminal_feed_child(VTE_TERMINAL(terminal),
+                                                defaultKeyBindings[i].bind.cmd, -1);
+                    }
+                    return TRUE;
+                }
+            }
         }
         for (int i = 0; i < keyCount; i++) {
             if (!strcasecmp(gdk_keyval_name(event->keyval), keyBindings[i].key)) {
@@ -498,6 +539,20 @@ static GtkWidget *getTerm() {
 }
 
 /*!
+ * Invalidate the default binding with the corresponding action
+ *
+ * \param binding
+ */
+static void invalidateDefaultBinding(const Bindings *binding) {
+    for (int i = 0; i < defaultKeyCount; i++) {
+        if (strcmp(defaultKeyBindings[i].bind.cmd, binding->cmd) == 0
+            && defaultKeyBindings[i].bind.internal == binding->internal) {
+            defaultKeyBindings[i].invalid = TRUE;
+        }
+    }
+}
+
+/*!
  * Initialize and start the terminal.
  *
  * \return 0 on success
@@ -624,6 +679,8 @@ static void parseSettings() {
                 printLog("cmd %d = %s -> \"%s\"\n", keyCount + 1,
                          keyBindings[keyCount].key,
                          keyBindings[keyCount].cmd);
+                /* Invalidate associated default bindings */
+                invalidateDefaultBinding(&keyBindings[keyCount]);
                 /* Increment the keys count */
                 keyCount++;
             }
