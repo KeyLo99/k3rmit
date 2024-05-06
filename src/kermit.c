@@ -86,7 +86,7 @@ static DefaultBindings defaultKeyBindings[] = {     /* Preconfigured default key
     { .bind = { .key = "c", .cmd = "copy", .internal = TRUE } },
     { .bind = { .key = "v", .cmd = "paste", .internal = TRUE } },
     { .bind = { .key = "t", .cmd = "new-tab", .internal = TRUE } },
-    { .bind = { .key = "t", .cmd = "return", .internal = TRUE } },
+    { .bind = { .key = "return", .cmd = "new-tab", .internal = TRUE } },
     { .bind = { .key = "r", .cmd = "reload-config", .internal = TRUE } },
     { .bind = { .key = "d", .cmd = "default-config", .internal = TRUE } },
     { .bind = { .key = "q", .cmd = "exit", .internal = TRUE } },

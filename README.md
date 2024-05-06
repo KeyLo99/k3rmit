@@ -97,14 +97,13 @@ kermit [-h] [-v] [-d] [-c config] [-t title] [-w workdir] [-e command]
 |----------------------------------------|-----------------------------------|
 | `ctrl` + `alt` + `c`                   | Copy to clipboard                 |
 | `ctrl` + `alt` + `v`                   | Paste from clipboard              |
-| `ctrl` + `alt` + `t`                   | Open a new tab                    |
+| `ctrl` + `alt` + `t`/`return`          | Open a new tab                    |
 | `ctrl` + `alt` + `r`                   | Reload configuration file         |
 | `ctrl` + `alt` + `d`                   | Load default configuration        |
 | `ctrl` + `alt` + `q`                   | Exit the terminal                 |
 | `ctrl` + `alt` + `k`/`up`              | Increase font size                |
 | `ctrl` + `alt` + `j`/`down`            | Decrease font size                |
 | `ctrl` + `alt` + `equals`/`plus`       | Reset font size to default        |
-| `ctrl` + `alt` + `return`              | Open new tab                      |
 | `ctrl` + `alt` + `<num>`               | Switch to tab with number `<num>` |
 | `ctrl` + `alt` + `l`/`right`/`pageup`  | Switch to next tab                |
 | `ctrl` + `alt` + `h`/`left`/`pagedown` | Switch to previous tab            |
