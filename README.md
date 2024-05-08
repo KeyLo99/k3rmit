@@ -91,28 +91,27 @@ kermit [-h] [-v] [-d] [-c config] [-t title] [-w workdir] [-e command]
 [-e command] sets the command to execute in terminal
 ```
 
-## Key Bindings
+## Default Key Bindings
 
-| Key                         | Action                         |
-| --------------------------- | ------------------------------ |
-| `ctrl-alt-[c]`              | copy to clipboard              |
-| `ctrl-alt-[v]`              | paste from clipboard           |
-| `ctrl-alt-[t]`              | open a new tab                 |
-| `ctrl-alt-[r]`              | reload configuration file      |
-| `ctrl-alt-[d]`              | load the default configuration |
-| `ctrl-alt-[q]`              | exit the terminal              |
-| `ctrl-alt-[k][up]`          | increase font size             |
-| `ctrl-alt-[j][down]`        | decrease font size             |
-| `ctrl-alt-[=]`              | reset font size to default     |
-| `ctrl-alt-[return]`         | open a new tab                 |
-| `ctrl-alt-[num]`            | switch to the tab number       |
-| `ctrl-alt-[l][right][pgup]` | switch to the next tab         |
-| `ctrl-alt-[h][left][pgdn]`  | switch to the previous tab     |
-| `ctrl-alt-[w][backspace]`   | close the selected tab         |
+| Key                                    | Action                            |
+|----------------------------------------|-----------------------------------|
+| `ctrl` + `alt` + `c`                   | Copy to clipboard                 |
+| `ctrl` + `alt` + `v`                   | Paste from clipboard              |
+| `ctrl` + `alt` + `t`/`return`          | Open a new tab                    |
+| `ctrl` + `alt` + `r`                   | Reload configuration file         |
+| `ctrl` + `alt` + `d`                   | Load default configuration        |
+| `ctrl` + `alt` + `q`                   | Exit the terminal                 |
+| `ctrl` + `alt` + `k`/`up`              | Increase font size                |
+| `ctrl` + `alt` + `j`/`down`            | Decrease font size                |
+| `ctrl` + `alt` + `equals`/`plus`       | Reset font size to default        |
+| `ctrl` + `alt` + `<num>`               | Switch to tab with number `<num>` |
+| `ctrl` + `alt` + `l`/`right`/`pageup`  | Switch to next tab                |
+| `ctrl` + `alt` + `h`/`left`/`pagedown` | Switch to previous tab            |
+| `ctrl` + `alt` + `backspace`           | Close the current tab             |
 
-• Key bindings (`ctrl-alt`) can be set to `ctrl-shift` with using the config file.
-
-• Default key bindings (`ctrl-alt`) might conflict with your desktop environments window shortcuts. To solve this issue, key bindings should be changed to `ctrl-shift`.
+The default modifiers (`ctrl` + `alt`) can be set to `ctrl` + `shift` using the config file.
+Key bindings can be overridden by custom key bindings.
+See [Configuration / Key Bindings](#key-bindings) for more information.
 
 ## Customization
 
@@ -136,10 +135,10 @@ font [FAMILY-LIST] [STYLE-OPTIONS] [SIZE]
 
 `FAMILY-LIST` is a comma-separated list of families optionally terminated by a comma, `STYLE_OPTIONS` is a whitespace-separated list of words where each WORD describes one of style, variant, weight, or stretch, and `SIZE` is a decimal number (size in points).
 
-• Available font families: `Normal, Sans, Serif and Monospace`.  
-• Available styles: `Normal, Oblique, Italic`.  
-• Available weights: `Ultra-Light, Light, Normal, Bold,Ultra-Bold, Heavy`.  
-• Available variants: `Normal, Small-Caps`.  
+• Available font families: `Normal, Sans, Serif and Monospace`.
+• Available styles: `Normal, Oblique, Italic`.
+• Available weights: `Ultra-Light, Light, Normal, Bold,Ultra-Bold, Heavy`.
+• Available variants: `Normal, Small-Caps`.
 • Available stretch styles: `Ultra-Condensed, Extra-Condensed, Condensed, Semi-Condensed, Normal, Semi-Expanded, Expanded, Extra-Expanded, Ultra-Expanded`.
 
 Examples:
@@ -155,11 +154,12 @@ font monospace bold italic condensed 12
 Custom keys and associated commands can be specified with the configuration file. An example entry is available [here](https://github.com/orhun/kermit/blob/master/.config/kermit.conf#L14) and entry format is shown below.
 
 ```
-bind/bindx [KEY]~"[COMMAND]"
+bind/bindx/bindi [KEY]~"[COMMAND]"
 ```
 
 - bind: `Send command to the terminal.`
 - bindx: `Send command to the terminal and execute.`
+- bindi: `Execute internal command`
 
 Examples:
 
@@ -168,7 +168,24 @@ bindx f~"df -h"
 bind r~"rm -i "
 bind p~"ps aux | grep "
 bind k~"kill -9 "
+bindi c~"copy"
 ```
+
+Currently available internal commands (`bindi`):
+* `copy`: copy to clipboard
+* `paste`: paste from clipboard
+* `reload-config`: reload config
+* `default-config`: load default config
+* `new-tab`: open new tab
+* `exit`: exit kermit
+* `inc-font-size`: increase font size by 1
+* `dec-font-size`: decrease font size by 1
+* `default-font-size`: reset font size to default
+* `next-tab`: go to next tab
+* `prev-tab`: go to previous tab
+* `close-tab`: close current tab
+* `new-window`: open new window with same working directory (requires `vte.sh`).
+
 
 ### Padding
 
