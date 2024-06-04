@@ -72,7 +72,8 @@ static gboolean debugMessages = FALSE;    /* Boolean value for -d argument */
 static gboolean closeTab = FALSE;         /* Close the tab on child-exited signal */
 static va_list vargs;                     /* Hold information about variable arguments */
 static GdkRGBA termPalette[TERM_PALETTE_SIZE];   /* Terminal colors */
-typedef struct {              /* Key bindings struct */
+static char **args;                       /* Save args the terminal was launched with*/
+typedef struct KeyBindings {              /* Key bindings struct */
     gboolean internal;
     char *key;
     char *cmd;
@@ -86,6 +87,7 @@ static DefaultBindings defaultKeyBindings[] = {     /* Preconfigured default key
     { .bind = { .key = "c", .cmd = "copy", .internal = TRUE } },
     { .bind = { .key = "v", .cmd = "paste", .internal = TRUE } },
     { .bind = { .key = "t", .cmd = "new-tab", .internal = TRUE } },
+    { .bind = { .key = "n", .cmd = "new-window", .internal = TRUE } },
     { .bind = { .key = "return", .cmd = "new-tab", .internal = TRUE } },
     { .bind = { .key = "r", .cmd = "reload-config", .internal = TRUE } },
     { .bind = { .key = "d", .cmd = "default-config", .internal = TRUE } },
@@ -144,6 +146,30 @@ static int connectSignals(GtkWidget *terminal) {
     return 0;
 }
 
+/*!
+ * Opens a new window with the same working directory
+ *
+ * \param terminal
+ */
+static void termClone(VteTerminal *terminal) {
+    const char prefix[] = "file://";
+    const char *path = vte_terminal_get_current_directory_uri(terminal);
+    if (path && strncmp(prefix, path, strlen(prefix)) == 0) {
+        path += strlen(prefix);
+    }
+    if (fork() == 0) {
+	if (!path) {
+            fprintf(stderr, "Unable to fetch current working directory\n");
+	} else if (chdir(path) == -1) {
+	    perror("Unable to change pwd for new terminal");
+        }
+        if (execvp(args[0], args) == -1) {
+            perror("Cloning the terminal failed");
+            _exit(errno);
+        }
+    }
+}
+
 /*
  * Handle internal action
  *
@@ -170,6 +196,8 @@ static gboolean termAction(GtkWidget *terminal, const char *action) {
     } else if (strcmp(action, "new-tab") == 0) {
         gtk_notebook_append_page(GTK_NOTEBOOK(notebook), getTerm(), NULL);
         gtk_widget_show_all(window);
+    } else if (strcmp(action, "new-window") == 0) {
+        termClone(VTE_TERMINAL(terminal));
     } else if (strcmp(action, "exit") == 0) {
         gtk_main_quit();
     } else if (strcmp(action, "inc-font-size") == 0) {
@@ -753,6 +781,7 @@ static void parseSettings() {
  * \return 1 on exit
  */
 static int parseArgs(int argc, char **argv) {
+    args = argv;
     while ((opt = getopt(argc, argv, ":c:w:e:t:vdh")) != -1) {
         switch (opt) {
             case 'c':
