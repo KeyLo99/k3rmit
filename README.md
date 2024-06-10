@@ -20,12 +20,12 @@ The project is inspired by [Vincent Bernat](https://vincent.bernat.ch/en)'s [art
   - [GCC](#gcc)
 - [Features](#features)
 - [Arguments](#arguments)
-- [Key Bindings](#key-bindings)
+- [Default Key Bindings](#default-key-bindings)
 - [Customization](#customization)
   - [Config File](#config-file)
   - [Theme](#theme)
   - [Font](#font)
-  - [Key Bindings](#key-bindings-1)
+  - [Key Bindings](#key-bindings)
   - [Padding](#padding)
 - [Screenshots](#screenshots)
 - [TODO(s)](#todos)
@@ -93,22 +93,22 @@ kermit [-h] [-v] [-d] [-c config] [-t title] [-w workdir] [-e command]
 
 ## Default Key Bindings
 
-| Key                                    | Action                             |
-|----------------------------------------|------------------------------------|
-| `ctrl` + `alt` + `c`                   | Copy to clipboard                  |
-| `ctrl` + `alt` + `v`                   | Paste from clipboard               |
-| `ctrl` + `alt` + `t`/`return`          | Open a new tab                     |
-| `ctrl` + `alt` + `n`                   | Open a new window                  |
-| `ctrl` + `alt` + `r`                   | Reload configuration file          |
-| `ctrl` + `alt` + `d`                   | Load default configuration         |
-| `ctrl` + `alt` + `q`                   | Exit the terminal                  |
-| `ctrl` + `alt` + `k`/`up`              | Increase font size                 |
-| `ctrl` + `alt` + `j`/`down`            | Decrease font size                 |
-| `ctrl` + `alt` + `equals`/`plus`       | Reset font size to default         |
-| `ctrl` + `alt` + `<num>`               | Switch to tab with number `<num>`  |
-| `ctrl` + `alt` + `l`/`right`/`pageup`  | Switch to next tab                 |
-| `ctrl` + `alt` + `h`/`left`/`pagedown` | Switch to previous tab             |
-| `ctrl` + `alt` + `backspace`           | Close the current tab              |
+| Key                                    | Action                            |
+| -------------------------------------- | --------------------------------- |
+| `ctrl` + `alt` + `c`                   | Copy to clipboard                 |
+| `ctrl` + `alt` + `v`                   | Paste from clipboard              |
+| `ctrl` + `alt` + `t`/`return`          | Open a new tab                    |
+| `ctrl` + `alt` + `n`                   | Open a new window                 |
+| `ctrl` + `alt` + `r`                   | Reload configuration file         |
+| `ctrl` + `alt` + `d`                   | Load default configuration        |
+| `ctrl` + `alt` + `q`                   | Exit the terminal                 |
+| `ctrl` + `alt` + `k`/`up`              | Increase font size                |
+| `ctrl` + `alt` + `j`/`down`            | Decrease font size                |
+| `ctrl` + `alt` + `equals`/`plus`       | Reset font size to default        |
+| `ctrl` + `alt` + `<num>`               | Switch to tab with number `<num>` |
+| `ctrl` + `alt` + `l`/`right`/`pageup`  | Switch to next tab                |
+| `ctrl` + `alt` + `h`/`left`/`pagedown` | Switch to previous tab            |
+| `ctrl` + `alt` + `backspace`           | Close the current tab             |
 
 The default modifiers (`ctrl` + `alt`) can be set to `ctrl` + `shift` using the config file.
 Key bindings can be overridden by custom key bindings.
@@ -173,20 +173,20 @@ bindi c~"copy"
 ```
 
 Currently available internal commands (`bindi`):
-* `copy`: copy to clipboard
-* `paste`: paste from clipboard
-* `reload-config`: reload config
-* `default-config`: load default config
-* `new-tab`: open new tab
-* `exit`: exit kermit
-* `inc-font-size`: increase font size by 1
-* `dec-font-size`: decrease font size by 1
-* `default-font-size`: reset font size to default
-* `next-tab`: go to next tab
-* `prev-tab`: go to previous tab
-* `close-tab`: close current tab
-* `new-window`: open new window with same working directory (requires `vte.sh`).
 
+- `copy`: copy to clipboard
+- `paste`: paste from clipboard
+- `reload-config`: reload config
+- `default-config`: load default config
+- `new-tab`: open new tab
+- `exit`: exit kermit
+- `inc-font-size`: increase font size by 1
+- `dec-font-size`: decrease font size by 1
+- `default-font-size`: reset font size to default
+- `next-tab`: go to next tab
+- `prev-tab`: go to previous tab
+- `close-tab`: close current tab
+- `new-window`: open new window with same working directory (requires `vte.sh`).
 
 ### Padding
 
